@@ -11,7 +11,7 @@ import 'package:mercuryjs/bridge.dart';
 import 'package:mercuryjs/launcher.dart';
 import 'package:mercuryjs/foundation.dart';
 
-class NativeValue extends Struct {
+base class NativeValue extends Struct {
   @Int64()
   external int u;
 
@@ -36,21 +36,21 @@ enum JSValueType {
   TAG_UINT8_BYTES
 }
 
-enum JSPointerType {
-  NativeBindingObject,
-  Others
-}
+enum JSPointerType { NativeBindingObject, Others }
 
 typedef AnonymousNativeFunction = dynamic Function(List<dynamic> args);
-typedef AsyncAnonymousNativeFunction = Future<dynamic> Function(List<dynamic> args);
+typedef AsyncAnonymousNativeFunction = Future<dynamic> Function(
+    List<dynamic> args);
 
-dynamic fromNativeValue(MercuryContextController view, Pointer<NativeValue> nativeValue) {
+dynamic fromNativeValue(
+    MercuryContextController view, Pointer<NativeValue> nativeValue) {
   if (nativeValue == nullptr) return null;
 
   JSValueType type = JSValueType.values[nativeValue.ref.tag];
   switch (type) {
     case JSValueType.TAG_STRING:
-      Pointer<NativeString> nativeString = Pointer.fromAddress(nativeValue.ref.u);
+      Pointer<NativeString> nativeString =
+          Pointer.fromAddress(nativeValue.ref.u);
       String result = nativeStringToString(nativeString);
       freeNativeString(nativeString);
       return result;
@@ -70,7 +70,8 @@ dynamic fromNativeValue(MercuryContextController view, Pointer<NativeValue> nati
 
       return Pointer.fromAddress(nativeValue.ref.u);
     case JSValueType.TAG_LIST:
-      Pointer<NativeValue> head = Pointer.fromAddress(nativeValue.ref.u).cast<NativeValue>();
+      Pointer<NativeValue> head =
+          Pointer.fromAddress(nativeValue.ref.u).cast<NativeValue>();
       List result = List.generate(nativeValue.ref.uint32, (index) {
         return fromNativeValue(view, head.elementAt(index));
       });
@@ -80,7 +81,8 @@ dynamic fromNativeValue(MercuryContextController view, Pointer<NativeValue> nati
     case JSValueType.TAG_ASYNC_FUNCTION:
       break;
     case JSValueType.TAG_JSON:
-      Pointer<NativeString> nativeString = Pointer.fromAddress(nativeValue.ref.u);
+      Pointer<NativeString> nativeString =
+          Pointer.fromAddress(nativeValue.ref.u);
       dynamic value = jsonDecode(nativeStringToString(nativeString));
       freeNativeString(nativeString);
       return value;
@@ -90,7 +92,8 @@ dynamic fromNativeValue(MercuryContextController view, Pointer<NativeValue> nati
   }
 }
 
-void toNativeValue(Pointer<NativeValue> target, value, [BindingObject? ownerBindingObject]) {
+void toNativeValue(Pointer<NativeValue> target, value,
+    [BindingObject? ownerBindingObject]) {
   if (value == null) {
     target.ref.tag = JSValueType.TAG_NULL.index;
   } else if (value is int) {
@@ -125,9 +128,10 @@ void toNativeValue(Pointer<NativeValue> target, value, [BindingObject? ownerBind
   } else if (value is List) {
     target.ref.tag = JSValueType.TAG_LIST.index;
     target.ref.uint32 = value.length;
-    Pointer<NativeValue> lists = malloc.allocate(sizeOf<NativeValue>() * value.length);
+    Pointer<NativeValue> lists =
+        malloc.allocate(sizeOf<NativeValue>() * value.length);
     target.ref.u = lists.address;
-    for(int i = 0; i < value.length; i ++) {
+    for (int i = 0; i < value.length; i++) {
       toNativeValue(lists.elementAt(i), value[i], ownerBindingObject);
     }
   } else if (value is Object) {
@@ -137,10 +141,12 @@ void toNativeValue(Pointer<NativeValue> target, value, [BindingObject? ownerBind
   }
 }
 
-Pointer<NativeValue> makeNativeValueArguments(BindingObject ownerBindingObject, List<dynamic> args) {
-  Pointer<NativeValue> buffer = malloc.allocate(sizeOf<NativeValue>() * args.length);
+Pointer<NativeValue> makeNativeValueArguments(
+    BindingObject ownerBindingObject, List<dynamic> args) {
+  Pointer<NativeValue> buffer =
+      malloc.allocate(sizeOf<NativeValue>() * args.length);
 
-  for(int i = 0; i < args.length; i ++) {
+  for (int i = 0; i < args.length; i++) {
     toNativeValue(buffer.elementAt(i), args[i], ownerBindingObject);
   }
 

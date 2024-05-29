@@ -74,13 +74,17 @@ class UIInspector {
     moduleRegistrar[module.name] = module;
   }
 
+  Uri? _inspectorURL;
+
+  Uri? get inspectorURL => _inspectorURL;
+
   void onServerStart(int port) async {
     String remoteAddress = await UIInspector.getConnectedLocalNetworkAddress();
-    String inspectorURL = '$INSPECTOR_URL?ws=$remoteAddress:$port';
+    _inspectorURL = Uri.parse('$INSPECTOR_URL?ws=$remoteAddress:$port');
 
     print('Mercury DevTool listening at ws://$remoteAddress:$port');
     print('Open Chrome/Edge and enter following url to your navigator:');
-    print('    $inspectorURL');
+    print('    $_inspectorURL');
   }
 
   void onClientConnected() {
@@ -90,7 +94,8 @@ class UIInspector {
     print('Open Chrome/Edge and connect to $remoteUrl to see the inspector.');
   }
 
-  void messageRouter(int? id, String module, String method, Map<String, dynamic>? params) {
+  void messageRouter(
+      int? id, String module, String method, Map<String, dynamic>? params) {
     if (moduleRegistrar.containsKey(module)) {
       moduleRegistrar[module]!.invoke(id, method, params);
     }
@@ -105,12 +110,14 @@ class UIInspector {
   }
 
   static Future<String> getConnectedLocalNetworkAddress() async {
-    List<NetworkInterface> interfaces =
-        await NetworkInterface.list(includeLoopback: false, type: InternetAddressType.IPv4);
+    List<NetworkInterface> interfaces = await NetworkInterface.list(
+        includeLoopback: false, type: InternetAddressType.IPv4);
 
     String result = INSPECTOR_DEFAULT_ADDRESS;
     for (NetworkInterface interface in interfaces) {
-      if (interface.name == 'en0' || interface.name == 'eth0' || interface.name == 'wlan0') {
+      if (interface.name == 'en0' ||
+          interface.name == 'eth0' ||
+          interface.name == 'wlan0') {
         result = interface.addresses.first.address;
         break;
       }

@@ -485,7 +485,7 @@ class HttpCacheObject {
   }
 }
 
-class HttpCacheObjectBlob extends EventSink<List<int>> {
+class HttpCacheObjectBlob implements EventSink<List<int>> {
   final String path;
   final File _file;
   IOSink? _writer;
