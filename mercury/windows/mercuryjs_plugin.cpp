@@ -85,7 +85,7 @@ void MercuryPlugin::HandleMethodCall(
 
 }  // namespace
 
-void MercuryPluginRegisterWithRegistrar(
+void MercuryjsPluginRegisterWithRegistrar(
     FlutterDesktopPluginRegistrarRef registrar) {
   MercuryPlugin::RegisterWithRegistrar(
       flutter::PluginRegistrarManager::GetInstance()

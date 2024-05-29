@@ -13,7 +13,7 @@ import 'native_value.dart';
 // All the class which extends Struct class has a corresponding struct in C++ code.
 // All class members include variables and functions must be follow the same order with C++ struct, to keep the same memory layout cross dart and C++ code.
 
-class NativeMercuryInfo extends Struct {
+base class NativeMercuryInfo extends Struct {
   external Pointer<Utf8> app_name;
   external Pointer<Utf8> app_version;
   external Pointer<Utf8> app_revision;
@@ -21,7 +21,7 @@ class NativeMercuryInfo extends Struct {
 }
 
 // An native struct can be directly convert to javaScript String without any conversion cost.
-class NativeString extends Struct {
+base class NativeString extends Struct {
   external Pointer<Uint16> string;
 
   @Uint32()
@@ -32,7 +32,7 @@ class NativeString extends Struct {
 // We choose to make all this structs have same memory layout. But dart lang did't provide semantically syntax to achieve this (like inheritance a class which extends Struct
 // or declare struct memory by value).
 // The only worked ways is use raw bytes to store NativeEvent members.
-class RawEvent extends Struct {
+base class RawEvent extends Struct {
 // Raw bytes represent the NativeEvent fields.
   external Pointer<Uint64> bytes;
   @Int64()
@@ -41,7 +41,7 @@ class RawEvent extends Struct {
   external int is_custom_event;
 }
 
-class EventDispatchResult extends Struct {
+base class EventDispatchResult extends Struct {
   @Bool()
   external bool canceled;
 
@@ -49,7 +49,7 @@ class EventDispatchResult extends Struct {
   external bool propagationStopped;
 }
 
-class AddEventListenerOptions extends Struct {
+base class AddEventListenerOptions extends Struct {
   @Bool()
   external bool capture;
 
@@ -60,13 +60,13 @@ class AddEventListenerOptions extends Struct {
   external bool once;
 }
 
-class NativeTouchList extends Struct {
+base class NativeTouchList extends Struct {
   @Int64()
   external int length;
   external Pointer<NativeTouch> touches;
 }
 
-class NativeTouch extends Struct {
+base class NativeTouch extends Struct {
   @Int64()
   external int identifier;
 
@@ -109,30 +109,48 @@ class NativeTouch extends Struct {
   external double azimuthAngle;
 }
 
-typedef InvokeBindingsMethodsFromNative = Void Function(Int32 contextId, Pointer<NativeBindingObject> binding_object,
-    Pointer<NativeValue> return_value, Pointer<NativeValue> method, Int32 argc, Pointer<NativeValue> argv);
+typedef InvokeBindingsMethodsFromNative = Void Function(
+    Int32 contextId,
+    Pointer<NativeBindingObject> binding_object,
+    Pointer<NativeValue> return_value,
+    Pointer<NativeValue> method,
+    Int32 argc,
+    Pointer<NativeValue> argv);
 
-typedef InvokeBindingMethodsFromDart = Void Function(Pointer<NativeBindingObject> binding_object,
-    Pointer<NativeValue> return_value, Pointer<NativeValue> method, Int32 argc, Pointer<NativeValue> argv, Handle bindingDartObject);
-typedef DartInvokeBindingMethodsFromDart = void Function(Pointer<NativeBindingObject> binding_object,
-    Pointer<NativeValue> return_value, Pointer<NativeValue> method, int argc, Pointer<NativeValue> argv, Object bindingDartObject);
+typedef InvokeBindingMethodsFromDart = Void Function(
+    Pointer<NativeBindingObject> binding_object,
+    Pointer<NativeValue> return_value,
+    Pointer<NativeValue> method,
+    Int32 argc,
+    Pointer<NativeValue> argv,
+    Handle bindingDartObject);
+typedef DartInvokeBindingMethodsFromDart = void Function(
+    Pointer<NativeBindingObject> binding_object,
+    Pointer<NativeValue> return_value,
+    Pointer<NativeValue> method,
+    int argc,
+    Pointer<NativeValue> argv,
+    Object bindingDartObject);
 
-class NativeBindingObject extends Struct {
+base class NativeBindingObject extends Struct {
   @Bool()
   external bool disposed;
   external Pointer<Void> instance;
-  external Pointer<NativeFunction<InvokeBindingMethodsFromDart>> invokeBindingMethodFromDart;
+  external Pointer<NativeFunction<InvokeBindingMethodsFromDart>>
+      invokeBindingMethodFromDart;
   // Shared method called by JS side.
-  external Pointer<NativeFunction<InvokeBindingsMethodsFromNative>> invokeBindingMethodFromNative;
+  external Pointer<NativeFunction<InvokeBindingsMethodsFromNative>>
+      invokeBindingMethodFromNative;
 }
 
 Pointer<NativeBindingObject> allocateNewBindingObject() {
-  Pointer<NativeBindingObject> pointer = malloc.allocate(sizeOf<NativeBindingObject>());
+  Pointer<NativeBindingObject> pointer =
+      malloc.allocate(sizeOf<NativeBindingObject>());
   pointer.ref.disposed = false;
   return pointer;
 }
 
-class NativePerformanceEntry extends Struct {
+base class NativePerformanceEntry extends Struct {
   external Pointer<Utf8> name;
   external Pointer<Utf8> entryType;
 
@@ -142,7 +160,7 @@ class NativePerformanceEntry extends Struct {
   external double duration;
 }
 
-class NativePerformanceEntryList extends Struct {
+base class NativePerformanceEntryList extends Struct {
   external Pointer<Uint64> entries;
 
   @Int32()

@@ -14,18 +14,22 @@ class MercuryDispatcher extends EventTarget {
   void initializeMethods(Map<String, BindingObjectMethod> methods) {
     methods['dispatchToDart'] = BindingObjectMethodSync(call: (args) {
       assert(args[0] is String);
-      _subscribed[args[0]]?.forEach((func) { func(args[1]); });
+      _subscribed[args[0]]?.forEach((func) {
+        func(args[1]);
+      });
       return true;
     });
   }
 
   @override
-  void initializeProperties(Map<String, BindingObjectProperty> properties) {
-  }
+  void initializeProperties(Map<String, BindingObjectProperty> properties) {}
 
-  void subscribe(String event, Function(List<dynamic>) func) {
+  void Function() subscribe(String event, Function(List<dynamic>) func) {
     _subscribed[event] ??= [];
 
     _subscribed[event]!.add(func);
+    return () {
+      _subscribed[event]!.remove(func);
+    };
   }
 }
